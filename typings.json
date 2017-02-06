@@ -1,0 +1,9 @@
+{
+  "globalDependencies": {
+    "mocha": "registry:dt/mocha#2.2.5+20170118061455",
+    "node": "registry:dt/node#7.0.0+20170124134802"
+  },
+  "dependencies": {
+    "expect": "registry:dt/expect#1.20.0+20170106021058"
+  }
+}

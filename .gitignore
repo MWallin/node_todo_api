@@ -1,0 +1,8 @@
+# Never include node_modules
+node_modules/
+
+# Never include acutal typings
+typings
+
+# Dont include environmental variables
+.env

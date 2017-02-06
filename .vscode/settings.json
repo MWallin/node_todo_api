@@ -1,0 +1,20 @@
+{
+  "files.exclude": {
+    // Basic tooling files
+    ".vscode/": true,
+    ".env*": true,
+    ".eslint*": true,
+    ".gitignore": true,
+    ".htmlhintrc": true,
+    ".stylelintrc": true,
+    "typings": true,
+    "jsconfig.json": true,
+    "typings.json": true,
+    // Project files
+    "node_modules": true,
+    "README.md": true,
+    "package.json": true
+  },
+  "vsicons.presets.angular": false
+}
+// Project specific files
