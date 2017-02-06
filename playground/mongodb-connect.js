@@ -3,7 +3,8 @@
 // *****************************************************************************
 // Requires
 
-const MongoClient = require( "mongodb" ).MongoClient
+const {MongoClient, ObjectID} = require( "mongodb" )
+
 
 MongoClient.connect( "mongodb://localhost:27017/TodoApp", ( error, db ) => {
 
@@ -11,15 +12,34 @@ MongoClient.connect( "mongodb://localhost:27017/TodoApp", ( error, db ) => {
     return console.log( "Unable to connect to MongoDB server" )
   }
 
-
   console.log( "Connected to MongoDB server" )
 
-  db.collection( "Todos" ).find({completed: false}).count()
-    .then( ( count ) => {
 
-      console.log( `There are ${count} todos left today!` )
+  db.collection( "Users" ).findOneAndUpdate(
+    { _id: new ObjectID( "58910e7f1f69e5389c70ad64" )},
+    {
+      $set: {name: "Elin Hultin"},
+      $inc: {age: -6}
+    },
+    { returnOriginal: false }
+  )
+  .then( ( uUser ) => {
+    console.log( "Updated user", uUser )
+  })
 
-    })
+  // db.collection( "Todos" ).findOneAndUpdate({ _id: new ObjectID( "5898a0980392b2b9c8e9530b" )}, { $set: {completed: true}}, {returnOriginal: false})
+  //   .then( ( uTodo ) => {
+  //     console.log( JSON.stringify( uTodo, undefined, 2 ) )
+  //   })
+
+
+
+  // db.collection( "Todos" ).find({completed: false}).count()
+  //   .then( ( count ) => {
+
+  //     console.log( `There are ${count} todos left today!` )
+
+  //   })
 
 
   // db.collection( "Todos" ).find({ completed: false }).toArray()
