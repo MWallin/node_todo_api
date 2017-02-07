@@ -1,83 +1,75 @@
 "use strict"
 
 // *****************************************************************************
+// *****************************************************************************
 // Requires
 
-const mongoose = require( "mongoose" )
+// Externals
 
-mongoose.Promise = global.Promise
-mongoose.connect( "mongodb://localhost:27017/TodoApp" )
+const bodyParser = require( "body-parser" )
+const express    = require( "express" )
 
 
+// Internals
 
-const Todo = mongoose.model( "Todo", {
-  text: {
-    type     : String,
-    required : true,
-    minlength: 2,
-    trim     : true
-  },
-  completed: {
-    type   : Boolean,
-    default: false
-  },
-  completedAt: {
-    type   : Number,
-    default: null
-  }
-})
-
-const newTodo = new Todo({
-  text: "C   ",
-})
+const {mongoose} = require( "./db/mongoose" )
+const {Todo}     = require( "./models/todo" )
+const {User}     = require( "./models/user" )
 
 
 
-// newTodo.save()
-//   .then( ( doc ) => {
 
-//     console.log( "Saved todo:", doc )
+// *****************************************************************************
+// *****************************************************************************
+// App setup
 
-//   })
-//   .catch( ( error ) => {
+const app = express()
 
-//     console.log( "Unable to save new todo", error )
-
-//   })
+app.use( bodyParser.json() )
 
 
+// *****************************************************************************
+// *****************************************************************************
+// Routing
 
-const User = mongoose.model( "User", {
-  name: {
-    type     : String,
-    required : true,
-    minlength: 1,
-    trim     : true
-  },
-  email: {
-    type     : String,
-    required : true,
-    minlength: 1,
-    trim     : true
+app.post( "/todos", ( req, res ) => {
 
-  }
-})
+  const {iText} = req.body
 
 
-const newUser = new User({
-  name : "Mikael Wallin",
-  email: "mikael.wallin@gmail.com"
-})
-
-newUser.save()
-  .then( ( doc ) => {
-
-    console.log( "Saved user:", doc )
-
+  const newTodo = new Todo({
+    text: iText
   })
-  .catch( ( error ) => {
 
-    console.log( "Unable to save new user", error )
+  newTodo.save()
+    .then( ( doc ) => {
 
-  })
+      res.send( doc )
+
+    })
+    .catch( ( error ) => {
+
+      console.log( "Oh shit", error )
+
+      res.status( 400 ).send( error )
+
+    })
+
+})
+
+
+
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Start server
+
+const port = 3000
+
+app.listen( port, () => {
+
+  console.log( `Server is listening on port ${port}` )
+
+})
 
