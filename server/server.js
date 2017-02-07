@@ -34,11 +34,10 @@ app.use( bodyParser.json() )
 
 app.post( "/todos", ( req, res ) => {
 
-  const {iText} = req.body
-
+  const {text} = req.body
 
   const newTodo = new Todo({
-    text: iText
+    text: text
   })
 
   newTodo.save()
@@ -48,8 +47,6 @@ app.post( "/todos", ( req, res ) => {
 
     })
     .catch( ( error ) => {
-
-      console.log( "Oh shit", error )
 
       res.status( 400 ).send( error )
 
@@ -73,3 +70,12 @@ app.listen( port, () => {
 
 })
 
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Exports for testing
+
+module.exports = {
+  app
+}
