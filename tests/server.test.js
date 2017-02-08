@@ -33,7 +33,7 @@ beforeEach( ( done ) => {
 
 describe( "POST Todos", () =>{
 
-  it("Should create a new todo", ( done ) => {
+  it( "Should create a new todo", ( done ) => {
 
     const text = "Dummy todo"
 

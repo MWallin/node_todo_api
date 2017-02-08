@@ -3,7 +3,7 @@
     // Basic tooling files
     ".vscode/": true,
     ".env*": true,
-    ".eslint*": true,
+    "/**/.eslint*": true,
     ".gitignore": true,
     ".htmlhintrc": true,
     ".stylelintrc": true,
@@ -15,6 +15,8 @@
     "README.md": true,
     "package.json": true
   },
+
+  // Icon
   "vsicons.presets.angular": false
+
 }
-// Project specific files
