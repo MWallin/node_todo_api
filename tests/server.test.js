@@ -15,12 +15,28 @@ const {Todo} = require( "./../server/models/todo" )
 
 // *****************************************************************************
 // *****************************************************************************
-// Prepares
+// Setting up
+
+const todos = [
+  {
+    text: "First test todo"
+  },
+  {
+    text: "Second test todo"
+  }
+]
+
+
 
 beforeEach( ( done ) => {
 
   Todo.remove({})
-    .then( () => done())
+    .then( () => {
+
+      return Todo.insertMany( todos )
+
+    }).then( () => done() )
+
 
 })
 
@@ -31,7 +47,7 @@ beforeEach( ( done ) => {
 // *****************************************************************************
 // Tests
 
-describe( "POST Todos", () =>{
+describe( "POST /todos", () =>{
 
   it( "Should create a new todo", ( done ) => {
 
@@ -51,7 +67,7 @@ describe( "POST Todos", () =>{
           return done( error )
         }
 
-        Todo.find()
+        Todo.find({text})
           .then( ( todos ) => {
             expect( todos.length ).toBe( 1 )
             expect( todos[0].text ).toBe( text )
@@ -62,6 +78,7 @@ describe( "POST Todos", () =>{
 
       })
   })
+
 
   it( "Should not create a todo with bad data", ( done ) => {
 
@@ -76,7 +93,7 @@ describe( "POST Todos", () =>{
 
         Todo.find()
           .then( ( todos ) => {
-            expect( todos.length ).toBe( 0 )
+            expect( todos.length ).toBe( 2 )
             done()
 
           })
@@ -84,6 +101,31 @@ describe( "POST Todos", () =>{
 
       })
   })
+
+
+
+
+})
+
+
+
+
+describe( "GET /todos", () =>{
+
+  it( "Should get all todos", ( done ) => {
+
+    request( app )
+      .get( "/todos" )
+      .expect( 200 )
+      .expect( ( res ) => {
+        expect( res.body.todos.length ).toBe( 2 )
+
+      })
+      .end( done )
+
+  })
+
+
 
 
 })
