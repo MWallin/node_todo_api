@@ -8,6 +8,7 @@
 
 const bodyParser = require( "body-parser" )
 const express    = require( "express" )
+const {ObjectID} = require( "mongodb" )
 
 
 // Internals
@@ -66,6 +67,37 @@ app.get( "/todos", ( req, res ) => {
     .catch( ( error ) => {
 
       res.status( 400 ).send( error )
+
+    })
+
+
+})
+
+
+app.get( "/todos/:id", ( req, res ) => {
+
+  const todoID = req.params.id
+
+
+  if ( !ObjectID.isValid( todoID ) ) {
+    return res.status( 404 ).send()
+
+  }
+
+
+  Todo.findById( todoID )
+    .then( ( todo ) => {
+
+      if ( !todo ) {
+        return res.status( 404 ).send()
+      }
+
+      res.status( 200 ).send({todo})
+
+    })
+    .catch( ( error ) => {
+
+      res.status( 400 ).send()
 
     })
 
