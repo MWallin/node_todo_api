@@ -63,7 +63,7 @@ app.get( "/todos", ( req, res ) => {
       res.send({todos})
 
     })
-    .catch( (error) => {
+    .catch( ( error ) => {
 
       res.status( 400 ).send( error )
 
