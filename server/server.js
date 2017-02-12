@@ -60,7 +60,7 @@ app.post( "/todos", ( req, res ) => {
   newTodo.save()
     .then( ( doc ) => {
 
-      res.send( doc )
+      res.status( 201 ).send( doc )
 
     })
     .catch( ( error ) => {
@@ -96,7 +96,7 @@ app.get( "/todos/:id", ( req, res ) => {
 
 
   if ( !ObjectID.isValid( todoID ) ) {
-    return res.status( 404 ).send()
+    return res.status( 400 ).send()
 
   }
 
@@ -113,13 +113,47 @@ app.get( "/todos/:id", ( req, res ) => {
     })
     .catch( ( error ) => {
 
-      res.status( 400 ).send()
+      res.status( 500 ).send()
+
+      console.log( error )
 
     })
 
 
 })
 
+
+app.delete( "/todos/:id", ( req, res ) => {
+
+  const todoID = req.params.id
+
+
+  if ( !ObjectID.isValid( todoID ) ) {
+    return res.status( 400 ).send()
+
+  }
+
+
+  Todo.findByIdAndRemove( todoID )
+    .then( ( todo ) => {
+
+      if ( !todo ) {
+        return res.status( 404 ).send()
+      }
+
+      res.status( 200 ).send({todo})
+
+    })
+    .catch( ( error ) => {
+
+      res.status( 500 ).send()
+
+      console.log( error )
+
+    })
+
+
+})
 
 
 
