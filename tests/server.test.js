@@ -142,8 +142,10 @@ describe( "GET /todos/:id", () => {
 
   it( "Should return todo doc", ( done ) => {
 
+    const goodID = todos[0]._id.toHexString()
+
     request( app )
-      .get( `/todos/${todos[0]._id.toHexString()}` )
+      .get( `/todos/${goodID}` )
       .expect( 200 )
       .expect( ( res ) => {
         expect( res.body.todo.text ).toBe( todos[0].text )
@@ -182,6 +184,70 @@ describe( "GET /todos/:id", () => {
 
   })
 
+
+
+})
+
+
+
+describe( "DELETE /todos/:id", () => {
+
+  it( "Should remove a todo", ( done ) => {
+
+    const goodID = todos[0]._id.toHexString()
+
+    request( app )
+      .delete( `/todos/${goodID}` )
+      .expect( 200 )
+      .expect( ( res ) => {
+        expect( res.body.todo._id ).toBe( goodID )
+
+      })
+      .end( ( err, res ) => {
+        if ( err ) {
+          return done( err )
+        }
+
+        Todo.findById( goodID )
+          .then( ( todo ) => {
+            expect( todo ).toNotExist()
+            done()
+
+          })
+          .catch( ( error ) => done( error ) )
+
+
+      })
+
+
+  })
+
+
+  it( "Should return 404 if todo not found", ( done ) => {
+
+    const badID = new ObjectID().toHexString()
+
+    request( app )
+      .delete( `/todos/${badID}` )
+      .expect( 404 )
+      .end( done )
+
+
+
+  })
+
+
+  it( "Should return 400 if ObjectID is invalid", ( done ) => {
+
+    const badID = "123abc"
+
+    request( app )
+      .delete( `/todos/${badID}` )
+      .expect( 400 )
+      .end( done )
+
+
+  })
 
 
 })
