@@ -8,14 +8,14 @@ const mongoose = require( "mongoose" )
 
 
 
-
 // *****************************************************************************
 // *****************************************************************************
 // Configuration
 
 mongoose.Promise = global.Promise
-mongoose.connect( "mongodb://localhost:27017/TodoApp" )
+mongoose.connect( process.env.DB_URI )
 
+//mongoose.connect( "mongodb://localhost:27017/TodoApp" )
 
 
 

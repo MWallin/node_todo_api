@@ -2,7 +2,17 @@
 
 // *****************************************************************************
 // *****************************************************************************
-// Requires
+// Load environment variables
+
+require( "dotenv-safe" ).load()
+
+
+
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Requires and constants
 
 // Externals
 
@@ -16,6 +26,12 @@ const {ObjectID} = require( "mongodb" )
 const {mongoose} = require( "./db/mongoose" )
 const {Todo}     = require( "./models/todo" )
 const {User}     = require( "./models/user" )
+
+
+// Constants
+
+const PORT = process.env.PORT
+
 
 
 
@@ -111,11 +127,9 @@ app.get( "/todos/:id", ( req, res ) => {
 // *****************************************************************************
 // Start server
 
-const port = 3000
+app.listen( PORT, () => {
 
-app.listen( port, () => {
-
-  console.log( `Server is listening on port ${port}` )
+  console.log( `Server is listening on port ${PORT}` )
 
 })
 

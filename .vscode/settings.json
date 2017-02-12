@@ -2,7 +2,6 @@
   "files.exclude": {
     // Basic tooling files
     ".vscode/": true,
-    ".env*": true,
     "/**/.eslint*": true,
     ".gitignore": true,
     ".htmlhintrc": true,
