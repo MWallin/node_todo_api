@@ -11,11 +11,8 @@
     "typings.json": true,
     // Project files
     "node_modules": true,
-    "README.md": true,
-    "package.json": true
+    "README.md": true
   },
-
   // Icon
   "vsicons.presets.angular": false
-
 }
