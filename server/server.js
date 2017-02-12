@@ -2,9 +2,9 @@
 
 // *****************************************************************************
 // *****************************************************************************
-// Load environment variables
+// Configure environment
 
-require( "dotenv-safe" ).load()
+require( "./config/config.js" )
 
 
 
