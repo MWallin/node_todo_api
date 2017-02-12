@@ -28,8 +28,10 @@ const todos = [
     text: "First test todo"
   },
   {
-    _id : new ObjectID(),
-    text: "Second test todo"
+    _id        : new ObjectID(),
+    text       : "Second test todo",
+    completed  : true,
+    completedAt: 333
   }
 ]
 
@@ -172,7 +174,7 @@ describe( "GET /todos/:id", () => {
 
 
 
-  it( "Should return 404 for non valid IDs", ( done ) => {
+  it( "Should return 400 if ObjectID is invalid", ( done ) => {
 
     const badID = "123abc"
 
@@ -243,6 +245,90 @@ describe( "DELETE /todos/:id", () => {
 
     request( app )
       .delete( `/todos/${badID}` )
+      .expect( 400 )
+      .end( done )
+
+
+  })
+
+
+})
+
+
+describe( "PATCH /todos/:id", () => {
+
+  it( "Should update the todo", ( done ) => {
+
+    const goodID = todos[0]._id.toHexString()
+
+    const todoUpdate = {
+      text     : "New todo text",
+      completed: true,
+      priority : "High"
+    }
+
+    request( app )
+      .patch( `/todos/${goodID}` )
+      .send( todoUpdate )
+      .expect( 200 )
+      .expect( ( res ) => {
+        expect( res.body.todo.text ).toBe( todoUpdate.text )
+        expect( res.body.todo.completed ).toBe( todoUpdate.completed )
+        expect( res.body.todo.completedAt ).toBeA( "number" )
+        expect( res.body.priority ).toNotExist()
+
+      })
+      .end( done )
+
+
+  })
+
+
+  it( "Should clear completedAt when todo is not completed", ( done ) => {
+
+    const goodID = todos[1]._id.toHexString()
+
+    const todoUpdate = {
+      text     : "New todo text",
+      completed: false
+    }
+
+    request( app )
+      .patch( `/todos/${goodID}` )
+      .send( todoUpdate )
+      .expect( 200 )
+      .expect( ( res ) => {
+        expect( res.body.todo.text ).toBe( todoUpdate.text )
+        expect( res.body.todo.completed ).toBe( todoUpdate.completed )
+        expect( res.body.todo.completedAt ).toNotExist()
+
+      })
+      .end( done )
+
+
+  })
+
+
+  it( "Should return 404 if todo not found", ( done ) => {
+
+    const badID = new ObjectID().toHexString()
+
+    request( app )
+      .patch( `/todos/${badID}` )
+      .expect( 404 )
+      .end( done )
+
+
+
+  })
+
+
+  it( "Should return 400 if ObjectID is invalid", ( done ) => {
+
+    const badID = "123abc"
+
+    request( app )
+      .patch( `/todos/${badID}` )
       .expect( 400 )
       .end( done )
 
