@@ -63,7 +63,7 @@ describe( "POST /todos", () =>{
     request( app )
       .post( "/todos" )
       .send({text: text})
-      .expect( 200 )
+      .expect( 201 )
       .expect( ( res ) => {
         expect( res.body.text ).toBe( text )
 
@@ -176,7 +176,7 @@ describe( "GET /todos/:id", () => {
 
     request( app )
       .get( `/todos/${badID}` )
-      .expect( 404 )
+      .expect( 400 )
       .end( done )
 
 
