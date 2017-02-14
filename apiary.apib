@@ -10,64 +10,44 @@ This is a simple API for handling todos.
 
 ### List all todos [GET]
 
+Get a list of all the todos in the collection. Returns a JSON object 
+with a todos array containing all of the todos. 
+
 + Response 200 (application/json)
 
-    {
-        todos:
-            [
-                {
-                    _id: "58a0443b65e83039e8f2241c",
-                    text: "Feed the cat!",
-                    __v: 0,
-                    completedAt: null,
-                    completed: false
-                }
-        ]
-    }
+        {
+            todos:
+                [
+                    {
+                        _id: "58a0443b65e83039e8f2241c",
+                        text: "Feed the cat!",
+                        __v: 0,
+                        completedAt: null,
+                        completed: false
+                    }
+                ]
+        }
 
 
-### Create a New Question [POST]
+### Create a new todo [POST]
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+You may create your own todo using this action. It takes a JSON
+object containing the text of the todo. 
 
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            "text": "Feed the cat"
         }
 
 + Response 201 (application/json)
 
-    + Headers
-
-            Location: /questions/2
-
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+              "__v": 0,
+              "text": "Feed the cat",
+              "_id": "58a2b368e344cb00114b508f",
+              "completedAt": null,
+              "completed": false
             }
