@@ -6,33 +6,25 @@ HOST: https://peaceful-eyrie-44139.herokuapp.com/
 This is a simple API for handling todos.
 
 
-## Questions Collection [/questions]
+## Todos collection [/todos]
 
-### List All Questions [GET]
+### List all todos [GET]
 
 + Response 200 (application/json)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
+    {
+        todos:
+            [
+                {
+                    _id: "58a0443b65e83039e8f2241c",
+                    text: "Feed the cat!",
+                    __v: 0,
+                    completedAt: null,
+                    completed: false
+                }
         ]
+    }
+
 
 ### Create a New Question [POST]
 
