@@ -55,6 +55,9 @@ app.use( bodyParser.json() )
 // *****************************************************************************
 // Routing
 
+// Todo - Move routes to a router file
+// Todo - Move logic to controller file
+
 app.post( "/todos", ( req, res ) => {
 
   const {text} = req.body
@@ -173,7 +176,7 @@ app.patch( "/todos/:id", ( req, res ) => {
 
   }
 
-
+  // Todo - Move to a function on the model
   if ( _.isBoolean( body.completed ) && body.completed ) {
     body.completedAt = new Date().getTime()
 
