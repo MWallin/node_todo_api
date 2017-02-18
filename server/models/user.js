@@ -6,6 +6,7 @@
 
 const validator = require( "validator" )
 const mongoose  = require( "mongoose" )
+const bcrypt    = require( "bcryptjs" )
 const jwt       = require( "jsonwebtoken" )
 const _         = require( "lodash" )
 
@@ -53,7 +54,7 @@ const UserSchema = new mongoose.Schema({
 
 // *****************************************************************************
 // *****************************************************************************
-// Function definition
+// Documents functions definition
 
 UserSchema.methods.generateAuthToken = function () {
 
@@ -92,6 +93,11 @@ UserSchema.methods.toJSON = function () {
 }
 
 
+
+// *****************************************************************************
+// *****************************************************************************
+// Model functions definition
+
 UserSchema.statics.findByToken = function ( token ) {
 
   const User = this
@@ -117,6 +123,48 @@ UserSchema.statics.findByToken = function ( token ) {
 
 
 }
+
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Middleware definition
+
+UserSchema.pre( "save", function ( next ) {
+
+  const user = this
+
+  if ( user.isModified( "password" ) ) {
+
+    bcrypt.genSalt( 11 )
+      .then( ( salt ) => {
+
+        return bcrypt.hash( user.password, salt )
+
+      })
+      .then( ( hash ) => {
+
+        user.password = hash
+
+        next()
+
+      })
+      .catch( ( error ) => {
+
+        console.log( "Oh snap", error )
+
+      })
+
+
+  } else {
+
+    next()
+
+  }
+
+
+})
+
 
 
 // *****************************************************************************
