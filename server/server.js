@@ -176,7 +176,7 @@ app.patch( "/todos/:id", ( req, res ) => {
 
   }
 
-  // Todo - Move to a function on the model
+  // Todo - Move to a function on the model #https://goo.gl/L3Oqan
   if ( _.isBoolean( body.completed ) && body.completed ) {
     body.completedAt = new Date().getTime()
 
@@ -222,6 +222,29 @@ app.patch( "/todos/:id", ( req, res ) => {
 })
 
 
+
+
+app.post( "/users", ( req, res ) => {
+
+  const body = _.pick( req.body, ["email", "password"] )
+
+
+  const newUser = new User({body})
+
+
+  newUser.save()
+    .then( ( doc ) => {
+
+      res.status( 201 ).send( doc )
+
+    })
+    .catch( ( error ) => {
+
+      res.status( 400 ).send( error )
+
+    })
+
+})
 
 
 
