@@ -8,15 +8,17 @@
 
 // Externals
 
-const expect = require( "expect" )
-const request = require( "supertest" )
+const expect     = require( "expect" )
+const request    = require( "supertest" )
 const {ObjectID} = require( "mongodb" )
 
 // Internals
 
-const {app} = require( "./../server/server" )
+const {app}  = require( "./../server/server" )
 const {Todo} = require( "./../server/models/todo" )
+const {User} = require( "./../server/models/user" )
 
+const {todos, populateTodos, users, populateUsers} = require( "./seed/seed" )
 
 
 
@@ -24,32 +26,9 @@ const {Todo} = require( "./../server/models/todo" )
 // *****************************************************************************
 // Setting up
 
-const todos = [
-  {
-    _id : new ObjectID(),
-    text: "First test todo"
-  },
-  {
-    _id        : new ObjectID(),
-    text       : "Second test todo",
-    completed  : true,
-    completedAt: 333
-  }
-]
+beforeEach( populateUsers )
 
-
-
-beforeEach( ( done ) => {
-
-  Todo.remove({})
-    .then( () => {
-
-      return Todo.insertMany( todos )
-
-    }).then( () => done() )
-
-
-})
+beforeEach( populateTodos )
 
 
 
@@ -339,3 +318,119 @@ describe( "PATCH /todos/:id", () => {
 
 
 })
+
+
+describe( "GET /users/me", () => {
+
+  it( "Should return user if authenticated", ( done ) => {
+
+    request( app )
+      .get( "/users/me" )
+      .set( "x-auth", users[0].tokens[0].token )
+      .expect( 200 )
+      .expect( ( res ) => {
+        expect( res.body._id ).toBe( users[0]._id.toHexString() )
+        expect( res.body.email ).toBe( users[0].email )
+
+      })
+      .end( done )
+
+
+  })
+
+
+  it( "Should return 401 if not authenticated", ( done ) => {
+
+    request( app )
+      .get( "/users/me" )
+      .expect( 401 )
+      .expect( ( res ) => {
+        expect( res.body ).toEqual({})
+
+      })
+      .end( done )
+
+
+  })
+
+
+})
+
+
+
+describe( "POST /users", () => {
+
+  it( "Should return 201 with new user with x-auth header", ( done ) => {
+
+    const user = {
+      email   : "email@example.com",
+      password: "abc123"
+    }
+
+    request( app )
+      .post( "/users" )
+      .send( user )
+      .expect( 201 )
+      .expect( ( res ) => {
+        expect( res.headers["x-auth"] ).toExist()
+        expect( res.body._id ).toExist()
+        expect( res.body.email ).toBe( user.email )
+
+      })
+      .end( ( error ) => {
+
+        if ( error ) {
+          return done( error )
+        }
+
+        User.findOne({email: user.email})
+          .then( ( returnedUser ) => {
+            expect( returnedUser ).toExist()
+            expect( returnedUser.password ).toNotBe( user.password )
+            done()
+
+          })
+
+      })
+
+
+  })
+
+
+  it( "Should return validation error if no email or password", ( done ) => {
+
+    const user = {
+      email   : "e",
+      password: "1"
+    }
+
+    request( app )
+      .post( "/users" )
+      .send( user )
+      .expect( 400 )
+      .end( done )
+
+
+  })
+
+
+  it( "Should return error if email in use", ( done ) => {
+
+    const user = {
+      email   : users[1].email,
+      password: users[1].password
+    }
+
+    request( app )
+      .post( "/users" )
+      .send( user )
+      .expect( 400 )
+      .end( done )
+
+
+  })
+
+
+})
+
+
