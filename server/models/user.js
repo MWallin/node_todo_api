@@ -126,6 +126,41 @@ UserSchema.statics.findByToken = function ( token ) {
 
 
 
+UserSchema.statics.findByCredentials = function ( email, password ) {
+
+  const User = this
+
+  return User.findOne({ email })
+    .then( ( user ) => {
+
+      if ( !user ) {
+        return Promise.reject()
+      }
+
+      return bcrypt.compare( password, user.password )
+        .then( ( match ) => {
+
+          if ( !match ) {
+
+            console.log( "password is no match" )
+
+            return Promise.reject()
+
+          }
+
+          console.log( "password is a match" )
+
+          return Promise.resolve( user )
+
+
+        })
+
+    })
+
+}
+
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Middleware definition
