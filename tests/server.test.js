@@ -390,6 +390,7 @@ describe( "POST /users", () => {
             done()
 
           })
+          .catch( ( error ) => done( error ) )
 
       })
 
@@ -433,4 +434,89 @@ describe( "POST /users", () => {
 
 })
 
+
+
+
+describe( "POST /users/login", () => {
+
+  it( "Should login user and return auth-token", ( done ) => {
+
+    const user = {
+      _id     : users[1]._id,
+      email   : users[1].email,
+      password: users[1].password
+    }
+
+    request( app )
+      .post( "/users/login" )
+      .send( user )
+      .expect( 200 )
+      .expect( ( res ) => {
+        expect( res.headers["x-auth"] ).toExist()
+        expect( res.body._id ).toBe( user._id.toHexString() )
+        expect( res.body.email ).toBe( user.email )
+      })
+      .end( ( error, res ) => {
+
+        if ( error ) {
+          return done( error )
+        }
+
+        User.findById( user._id )
+          .then( ( returnedUser ) => {
+            expect( returnedUser.tokens[0] ).toInclude(
+              {
+                access: "auth",
+                token : res.headers["x-auth"]
+              }
+            )
+
+            done()
+
+          })
+          .catch( ( error ) => done( error ) )
+
+      })
+
+  })
+
+
+  it( "Should reject invalid login", ( done ) => {
+
+    const user = {
+      _id     : users[1]._id,
+      email   : users[1].email,
+      password: "users[1].password"
+    }
+
+    request( app )
+      .post( "/users/login" )
+      .send( user )
+      .expect( 400 )
+      .expect( ( res ) => {
+        expect( res.headers["x-auth"] ).toNotExist()
+        expect( res.body._id ).toNotExist()
+
+      })
+      .end( ( error, res ) => {
+
+        if ( error ) {
+          return done( error )
+        }
+
+        User.findById( user._id )
+          .then( ( returnedUser ) => {
+            expect( returnedUser.tokens.length ).toBe( 0 )
+
+            done()
+
+          })
+          .catch( ( error ) => done( error ) )
+
+      })
+
+  })
+
+
+})
 
