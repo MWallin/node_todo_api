@@ -142,13 +142,9 @@ UserSchema.statics.findByCredentials = function ( email, password ) {
 
           if ( !match ) {
 
-            console.log( "password is no match" )
-
             return Promise.reject()
 
           }
-
-          console.log( "password is a match" )
 
           return Promise.resolve( user )
 
