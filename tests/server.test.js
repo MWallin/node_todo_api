@@ -515,7 +515,60 @@ describe( "POST /users/login", () => {
 
       })
 
+
   })
+
+
+})
+
+
+
+describe( "DELETE /users/me/token", () => {
+
+  it( "Should remove auth token on logout", ( done ) => {
+
+    const user = {
+      _id  : users[0]._id,
+      token: users[0].tokens[0].token
+    }
+
+    request( app )
+      .delete( "/users/me/token" )
+      .set( "x-auth", user.token )
+      .expect( 200 )
+      .end( ( error, res ) => {
+
+        if ( error ) {
+          return done( error )
+        }
+
+        User.findById( user._id )
+          .then( ( returnedUser ) => {
+            expect( returnedUser.tokens.length ).toBe( 0 )
+
+            done()
+
+          })
+          .catch( ( error ) => done( error ) )
+
+      })
+
+
+
+  })
+
+
+
+  it( "Should return 401 if not authenticated", ( done ) => {
+
+    request( app )
+      .delete( "/users/me/token" )
+      .expect( 401 )
+      .end( done )
+
+
+  })
+
 
 
 })
