@@ -45,6 +45,7 @@ describe( "POST /todos", () =>{
 
     request( app )
       .post( "/todos" )
+      .set( "x-auth", users[0].tokens[0].token )
       .send({text: text})
       .expect( 201 )
       .expect( ( res ) => {
@@ -61,6 +62,7 @@ describe( "POST /todos", () =>{
           .then( ( todos ) => {
             expect( todos.length ).toBe( 1 )
             expect( todos[0].text ).toBe( text )
+            expect( todos[0]._creator.toHexString() ).toBe( users[0]._id.toHexString() )
             done()
 
           })
@@ -74,6 +76,7 @@ describe( "POST /todos", () =>{
 
     request( app )
       .post( "/todos" )
+      .set( "x-auth", users[0].tokens[0].token )
       .send({})
       .expect( 400 )
       .end( ( error, res ) => {
@@ -93,6 +96,16 @@ describe( "POST /todos", () =>{
   })
 
 
+  it( "Should not create a todo if not authenticated", ( done ) => {
+
+    request( app )
+      .post( "/todos" )
+      .send({})
+      .expect( 401 )
+      .end( done )
+
+
+  })
 
 
 })
@@ -106,15 +119,27 @@ describe( "GET /todos", () =>{
 
     request( app )
       .get( "/todos" )
+      .set( "x-auth", users[0].tokens[0].token )
       .expect( 200 )
       .expect( ( res ) => {
-        expect( res.body.todos.length ).toBe( 2 )
+        expect( res.body.todos.length ).toBe( 1 )
 
       })
       .end( done )
 
   })
 
+
+  it( "Should not return todos if not authenticated", ( done ) => {
+
+    request( app )
+      .get( "/todos" )
+      .send({})
+      .expect( 401 )
+      .end( done )
+
+
+  })
 
 
 
@@ -129,9 +154,28 @@ describe( "GET /todos/:id", () => {
 
     request( app )
       .get( `/todos/${goodID}` )
+      .set( "x-auth", users[0].tokens[0].token )
       .expect( 200 )
       .expect( ( res ) => {
         expect( res.body.todo.text ).toBe( todos[0].text )
+
+      })
+      .end( done )
+
+
+  })
+
+
+  it( "Should not return todo doc for other user", ( done ) => {
+
+    const goodID = todos[1]._id.toHexString()
+
+    request( app )
+      .get( `/todos/${goodID}` )
+      .set( "x-auth", users[0].tokens[0].token )
+      .expect( 404 )
+      .expect( ( res ) => {
+        expect( res.body ).toEqual({})
 
       })
       .end( done )
@@ -147,6 +191,7 @@ describe( "GET /todos/:id", () => {
 
     request( app )
       .get( `/todos/${badID}` )
+      .set( "x-auth", users[0].tokens[0].token )
       .expect( 404 )
       .end( done )
 
@@ -161,6 +206,7 @@ describe( "GET /todos/:id", () => {
 
     request( app )
       .get( `/todos/${badID}` )
+      .set( "x-auth", users[0].tokens[0].token )
       .expect( 400 )
       .end( done )
 
@@ -168,8 +214,22 @@ describe( "GET /todos/:id", () => {
   })
 
 
+  it( "Should not return todo if not authenticated", ( done ) => {
+
+    const badID = "123abc"
+
+    request( app )
+      .get( `/todos/${badID}` )
+      .send({})
+      .expect( 401 )
+      .end( done )
+
+  })
+
 
 })
+
+
 
 
 
@@ -177,10 +237,11 @@ describe( "DELETE /todos/:id", () => {
 
   it( "Should remove a todo", ( done ) => {
 
-    const goodID = todos[0]._id.toHexString()
+    const goodID = todos[1]._id.toHexString()
 
     request( app )
       .delete( `/todos/${goodID}` )
+      .set( "x-auth", users[1].tokens[0].token )
       .expect( 200 )
       .expect( ( res ) => {
         expect( res.body.todo._id ).toBe( goodID )
@@ -206,12 +267,44 @@ describe( "DELETE /todos/:id", () => {
   })
 
 
+  it( "Should not remove another users todo", ( done ) => {
+
+    const goodID = todos[0]._id.toHexString()
+
+    request( app )
+      .delete( `/todos/${goodID}` )
+      .set( "x-auth", users[1].tokens[0].token )
+      .expect( 404 )
+      .expect( ( res ) => {
+        expect( res.body ).toEqual({})
+
+      })
+      .end( ( err, res ) => {
+        if ( err ) {
+          return done( err )
+        }
+
+        Todo.findById( goodID )
+          .then( ( todo ) => {
+            expect( todo ).toExist()
+            done()
+
+          })
+          .catch( ( error ) => done( error ) )
+
+
+      })
+
+  })
+
+
   it( "Should return 404 if todo not found", ( done ) => {
 
     const badID = new ObjectID().toHexString()
 
     request( app )
       .delete( `/todos/${badID}` )
+      .set( "x-auth", users[1].tokens[0].token )
       .expect( 404 )
       .end( done )
 
@@ -226,12 +319,25 @@ describe( "DELETE /todos/:id", () => {
 
     request( app )
       .delete( `/todos/${badID}` )
+      .set( "x-auth", users[1].tokens[0].token )
       .expect( 400 )
       .end( done )
 
 
   })
 
+
+  it( "Should not delete todo if not authenticated", ( done ) => {
+
+    const badID = "123abc"
+
+    request( app )
+      .delete( `/todos/${badID}` )
+      .send({})
+      .expect( 401 )
+      .end( done )
+
+  })
 
 })
 
@@ -250,6 +356,7 @@ describe( "PATCH /todos/:id", () => {
 
     request( app )
       .patch( `/todos/${goodID}` )
+      .set( "x-auth", users[0].tokens[0].token )
       .send( todoUpdate )
       .expect( 200 )
       .expect( ( res ) => {
@@ -260,6 +367,41 @@ describe( "PATCH /todos/:id", () => {
 
       })
       .end( done )
+
+
+  })
+
+  it( "Should not update the todo for another user", ( done ) => {
+
+    const goodID = todos[0]._id.toHexString()
+
+    const todoUpdate = {
+      text     : "New todo text",
+      completed: true,
+      priority : "High"
+    }
+
+    request( app )
+      .patch( `/todos/${goodID}` )
+      .set( "x-auth", users[1].tokens[0].token )
+      .send( todoUpdate )
+      .expect( 404 )
+      .expect( ( res ) => {
+        expect( res.body ).toEqual({})
+
+      })
+      .end( ( err, res ) => {
+
+        Todo.findById( goodID )
+          .then( ( todo ) => {
+            expect( todo.text ).toNotBe( todoUpdate.text )
+            done()
+
+          })
+          .catch( ( error ) => done( error ) )
+
+
+      })
 
 
   })
@@ -276,6 +418,7 @@ describe( "PATCH /todos/:id", () => {
 
     request( app )
       .patch( `/todos/${goodID}` )
+      .set( "x-auth", users[1 ].tokens[0].token )
       .send( todoUpdate )
       .expect( 200 )
       .expect( ( res ) => {
@@ -296,6 +439,7 @@ describe( "PATCH /todos/:id", () => {
 
     request( app )
       .patch( `/todos/${badID}` )
+      .set( "x-auth", users[1 ].tokens[0].token )
       .expect( 404 )
       .end( done )
 
@@ -310,12 +454,23 @@ describe( "PATCH /todos/:id", () => {
 
     request( app )
       .patch( `/todos/${badID}` )
+      .set( "x-auth", users[1 ].tokens[0].token )
       .expect( 400 )
       .end( done )
 
 
   })
 
+  it( "Should not update todo if not authenticated", ( done ) => {
+
+    const badID = "123abc"
+
+    request( app )
+      .patch( `/todos/${badID}` )
+      .expect( 401 )
+      .end( done )
+
+  })
 
 })
 
@@ -464,7 +619,7 @@ describe( "POST /users/login", () => {
 
         User.findById( user._id )
           .then( ( returnedUser ) => {
-            expect( returnedUser.tokens[0] ).toInclude(
+            expect( returnedUser.tokens[1] ).toInclude(
               {
                 access: "auth",
                 token : res.headers["x-auth"]
@@ -506,7 +661,7 @@ describe( "POST /users/login", () => {
 
         User.findById( user._id )
           .then( ( returnedUser ) => {
-            expect( returnedUser.tokens.length ).toBe( 0 )
+            expect( returnedUser.tokens.length ).toBe( 1 )
 
             done()
 

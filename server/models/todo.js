@@ -27,6 +27,11 @@ const Todo = mongoose.model( "Todo", {
   completedAt: {
     type   : Number,
     default: null
+  },
+  _creator: {
+    // Todo add ref to user
+    type    : mongoose.Schema.Types.ObjectId,
+    required: true
   }
 })
 
