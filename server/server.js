@@ -21,8 +21,6 @@ const express    = require( "express" )
 const {ObjectID} = require( "mongodb" )
 const _          = require( "lodash" )
 
-// const format     = require( "date-fns/format" )
-// const svLocale   = require( "date-fns/locale/sv" )
 
 // Internals
 

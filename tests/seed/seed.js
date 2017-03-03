@@ -35,7 +35,7 @@ const users = [
         {
           _id   : userOneID,
           access: "auth"
-        }, "abc123" ).toString()
+        }, process.env.JWT_SECRET ).toString()
     }]
   },
   {
@@ -48,7 +48,7 @@ const users = [
         {
           _id   : userTwoID,
           access: "auth"
-        }, "abc123" ).toString()
+        }, process.env.JWT_SECRET ).toString()
     }]
   }
 ]
